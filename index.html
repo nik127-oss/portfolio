@@ -782,9 +782,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 /* ═══ RESUME ═══ */
 const resumeUrl = './resume.pdf';
 function viewResume() {
-  document.getElementById('resumeFrame').src = `https://docs.google.com/viewer?url=${encodeURIComponent(resumeUrl)}&embedded=true`;
-  document.getElementById('resumeModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
+  window.open('./resume.pdf', '_blank');
 }
 function closeResumeModal() {
   document.getElementById('resumeModal').classList.remove('active');
