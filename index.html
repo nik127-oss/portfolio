@@ -780,8 +780,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 /* ═══ RESUME ═══ */
-const resumeUrl = 'https://github.com/nik127-oss/nik127-oss.github.io/raw/main/resume.pdf';
-
+const resumeUrl = './resume.pdf';
 function viewResume() {
   document.getElementById('resumeFrame').src = `https://docs.google.com/viewer?url=${encodeURIComponent(resumeUrl)}&embedded=true`;
   document.getElementById('resumeModal').classList.add('active');
