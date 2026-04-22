@@ -1,1 +1,809 @@
-(content omitted for brevity)
+ok i have a portfolio website and it jsut bare html now what should i do for github and vercel 
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Goluguri Nikhil Suri Reddy — Front-End VLSI / CPU Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080a;--bg-2:#0b0d10;--panel:#0e1115;
+  --line:#1a1f26;--line-2:#232a33;
+  --ink:#e8ece9;--ink-2:#a7b0ab;--ink-3:#6b7570;--ink-4:#3d4641;
+  --signal:#b6ff3a;--signal-dim:#6a9622;--amber:#ffb347;--red:#ff5c5c;
+  --serif:'Instrument Serif','Times New Roman',serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Geist',-apple-system,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:radial-gradient(1200px 700px at 80% -200px,rgba(182,255,58,0.04),transparent 60%),radial-gradient(900px 500px at -10% 30%,rgba(255,179,71,0.025),transparent 60%),var(--bg);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+::selection{background:var(--signal);color:#000}
+
+/* ═══ CUSTOM CURSOR SYSTEM ═══ */
+@media(pointer:fine){
+  html,body,a,button,input,textarea,select{cursor:none!important}
+}
+@media(pointer:coarse),(prefers-reduced-motion:reduce){
+  .cursor-crosshair,.cursor-ring,.cursor-canvas,.scanlines{display:none!important}
+  html,body,a,button,input,textarea,select{cursor:auto!important}
+}
+
+.cursor-canvas{position:fixed;inset:0;z-index:9997;pointer-events:none;mix-blend-mode:normal}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:.4;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.02) 2px,rgba(0,0,0,0.02) 4px)}
+@media(max-width:768px){.scanlines{display:none}}
+
+/* ── CROSSHAIR CURSOR DOT ── */
+.cursor-crosshair{
+  position:fixed;top:0;left:0;
+  pointer-events:none;z-index:10001;
+  transform:translate(-50%,-50%);
+  transition:transform .08s ease;
+}
+.cursor-crosshair::before,
+.cursor-crosshair::after{
+  content:'';position:absolute;background:var(--signal);
+  box-shadow:0 0 8px var(--signal),0 0 2px var(--signal);
+  border-radius:1px;
+}
+/* Horizontal bar */
+.cursor-crosshair::before{
+  width:14px;height:1.5px;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+/* Vertical bar */
+.cursor-crosshair::after{
+  width:1.5px;height:14px;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+/* Center pixel via box-shadow on the element itself */
+.cursor-crosshair .center-dot{
+  position:absolute;
+  width:3px;height:3px;
+  background:var(--signal);
+  border-radius:50%;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 6px var(--signal),0 0 12px rgba(182,255,58,.5);
+}
+.cursor-crosshair.click{transform:translate(-50%,-50%) scale(0.7);}
+.cursor-crosshair.hover::before,.cursor-crosshair.hover::after{
+  background:var(--amber);
+  box-shadow:0 0 8px var(--amber),0 0 2px var(--amber);
+}
+.cursor-crosshair.hover .center-dot{
+  background:var(--amber);
+  box-shadow:0 0 6px var(--amber),0 0 12px rgba(255,179,71,.5);
+}
+
+/* ── TARGETING RING ── */
+.cursor-ring{
+  position:fixed;top:0;left:0;
+  width:36px;height:36px;
+  pointer-events:none;z-index:10000;
+  transform:translate(-50%,-50%);
+  transition:width .3s cubic-bezier(.23,1,.32,1),
+             height .3s cubic-bezier(.23,1,.32,1),
+             opacity .25s ease,
+             border-color .25s ease;
+}
+/* Main circle via SVG drawn in JS — we use CSS for the segmented arc look */
+.cursor-ring::before{
+  content:'';
+  position:absolute;inset:0;
+  border-radius:50%;
+  border:1px solid rgba(182,255,58,0.45);
+  /* Dashes: segments at 0°, 90°, 180°, 270° with gaps */
+  clip-path:none;
+}
+/* Tick marks at 12, 3, 6, 9 via outline + clipping trick */
+.cursor-ring .tick{
+  position:absolute;
+  background:var(--signal);
+  box-shadow:0 0 4px var(--signal);
+  border-radius:1px;
+}
+.cursor-ring .tick-n{width:1.5px;height:5px;top:-2px;left:50%;transform:translateX(-50%)}
+.cursor-ring .tick-s{width:1.5px;height:5px;bottom:-2px;left:50%;transform:translateX(-50%)}
+.cursor-ring .tick-e{width:5px;height:1.5px;right:-2px;top:50%;transform:translateY(-50%)}
+.cursor-ring .tick-w{width:5px;height:1.5px;left:-2px;top:50%;transform:translateY(-50%)}
+.cursor-ring.hover{
+  width:58px;height:58px;
+  border-color:rgba(255,179,71,0.6) !important;
+}
+.cursor-ring.hover .tick{background:var(--amber);box-shadow:0 0 4px var(--amber)}
+.cursor-ring.hover::before{border-color:rgba(255,179,71,0.5)}
+.cursor-ring.click{opacity:0}
+
+/* Magnetic button wrapper */
+.mag-wrap{--mx:0px;--my:0px;transform:translate(var(--mx),var(--my));transition:transform .2s cubic-bezier(.23,1,.32,1)}
+
+/* ═══ BUTTON SHIMMER & FADE EFFECTS ═══ */
+.btn{
+  font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  padding:14px 22px;border:1px solid var(--line-2);color:var(--ink);
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,0.01);
+  position:relative;overflow:hidden;
+  /* Transition: color, border, background + opacity fade */
+  transition:color .3s ease, border-color .3s ease, background .3s ease, opacity .15s ease;
+}
+/* Shimmer sweep pseudo-element */
+.btn::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(182,255,58,0.12) 50%,
+    transparent 70%
+  );
+  transform:translateX(-110%);
+  transition:transform 0s;
+  pointer-events:none;
+}
+.btn:hover{
+  border-color:var(--signal);
+  color:var(--signal);
+  background:rgba(182,255,58,0.04);
+  opacity:1;
+}
+.btn:hover::before{
+  transform:translateX(120%);
+  transition:transform .55s ease;
+}
+/* Hover state: brief opacity dip then restore (fade effect) */
+.btn:hover{animation:btnFade .35s ease forwards}
+@keyframes btnFade{
+  0%{opacity:1}
+  15%{opacity:.7}
+  100%{opacity:1}
+}
+.btn.primary{background:var(--signal);color:#000;border-color:var(--signal)}
+.btn.primary::before{background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%)}
+.btn.primary:hover{background:#d1ff6e;color:#000;animation:btnFadePrimary .35s ease forwards}
+@keyframes btnFadePrimary{
+  0%{opacity:1}
+  15%{opacity:.75}
+  100%{opacity:1}
+}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* Contact links — shimmer fade too */
+.contact-links a,
+.contact-links button{
+  display:flex;justify-content:space-between;gap:30px;align-items:center;
+  padding:14px 18px;border:1px solid var(--line-2);min-width:340px;
+  color:var(--ink);background:transparent;width:100%;text-align:left;
+  position:relative;overflow:hidden;
+  transition:border-color .3s ease, color .3s ease, transform .25s ease, opacity .15s ease;
+}
+.contact-links a::before,
+.contact-links button::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 20%,rgba(182,255,58,0.08) 50%,transparent 80%);
+  transform:translateX(-110%);
+  pointer-events:none;
+  transition:transform 0s;
+}
+.contact-links a:hover,
+.contact-links button:hover{
+  border-color:var(--signal);color:var(--signal);
+  transform:translateX(-4px);
+  animation:btnFade .35s ease forwards;
+}
+.contact-links a:hover::before,
+.contact-links button:hover::before{
+  transform:translateX(120%);
+  transition:transform .55s ease;
+}
+
+/* Chip shimmer */
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+  padding:5px 9px;border:1px solid var(--line-2);color:var(--ink-2);
+  background:rgba(255,255,255,0.015);white-space:nowrap;
+  position:relative;overflow:hidden;
+  transition:color .25s ease, border-color .25s ease, opacity .15s ease;
+}
+.chip::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 20%,rgba(182,255,58,0.1) 50%,transparent 80%);
+  transform:translateX(-110%);pointer-events:none;
+  transition:transform 0s;
+}
+.chip:hover{color:var(--signal);border-color:var(--signal-dim);animation:btnFade .3s ease forwards}
+.chip:hover::before{transform:translateX(120%);transition:transform .4s ease}
+.chip.hot{border-color:var(--signal-dim);color:var(--signal)}
+
+/* Skill items shimmer */
+.skill-cat .items span{
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+  padding:5px 10px;border:1px solid var(--line-2);
+  background:rgba(255,255,255,0.01);
+  position:relative;overflow:hidden;
+  transition:color .25s ease, border-color .25s ease, opacity .15s ease;
+  white-space:nowrap;
+}
+.skill-cat .items span::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 20%,rgba(182,255,58,0.1) 50%,transparent 80%);
+  transform:translateX(-110%);pointer-events:none;transition:transform 0s;
+}
+.skill-cat .items span:hover{
+  border-color:var(--signal);color:var(--signal);
+  animation:btnFade .3s ease forwards;
+}
+.skill-cat .items span:hover::before{transform:translateX(120%);transition:transform .4s ease}
+
+/* Spec cells */
+.spec .cell{
+  padding:20px 24px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  position:relative;overflow:hidden;
+  transition:background .25s ease;
+}
+.spec .cell::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(160deg,transparent 30%,rgba(182,255,58,0.06) 60%,transparent 80%);
+  opacity:0;transition:opacity .3s ease;pointer-events:none;
+}
+.spec .cell:hover{background:rgba(182,255,58,0.025)}
+.spec .cell:hover::before{opacity:1}
+
+/* ═══ LAYOUT ═══ */
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(to right,rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at center,black 40%,transparent 85%)}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.035;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+
+nav.top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;backdrop-filter:blur(14px);background:linear-gradient(to bottom,rgba(7,8,10,0.8),rgba(7,8,10,0.4));border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+nav.top.scrolled{border-bottom-color:var(--line);background:rgba(7,8,10,0.85)}
+nav.top .brand{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-2);display:flex;gap:10px;align-items:center}
+nav.top .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--signal);animation:pulse 2s infinite}
+nav.top .links{display:flex;gap:28px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+nav.top .links a{transition:color .2s}
+nav.top .links a:hover{color:var(--ink)}
+nav.top .links a span.num{color:var(--ink-4);margin-right:6px}
+nav.top .status{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:2}
+.hero{min-height:100vh;display:flex;align-items:center;padding-top:120px;padding-bottom:80px;position:relative}
+.hero-inner{display:grid;grid-template-columns:1.3fr 1fr;gap:80px;align-items:center;width:100%}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);display:flex;align-items:center;gap:12px;margin-bottom:36px}
+.eyebrow .bar{width:32px;height:1px;background:var(--signal)}
+.headline{font-family:var(--serif);font-size:clamp(56px,8.2vw,128px);line-height:.92;letter-spacing:-.035em;font-weight:400;margin-bottom:28px}
+.headline em{font-style:italic;color:var(--ink-2)}
+.headline .amp{color:var(--signal);font-style:italic}
+.sub{max-width:560px;color:var(--ink-2);font-size:17px;line-height:1.55;margin-bottom:44px}
+.sub strong{color:var(--ink);font-weight:500}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+
+.id-card{position:relative;padding:22px;border:1px solid var(--line);background:linear-gradient(180deg,var(--bg-2),var(--panel))}
+.id-card::before{content:"";position:absolute;top:-1px;left:-1px;width:18px;height:18px;border-top:1px solid var(--signal);border-left:1px solid var(--signal)}
+.id-card::after{content:"";position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;border-bottom:1px solid var(--signal);border-right:1px solid var(--signal)}
+.id-header{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px}
+.portrait-wrap{position:relative;aspect-ratio:1/1;overflow:hidden;background:#111;border:1px solid var(--line-2)}
+.portrait-wrap img{width:100%;height:100%;object-fit:cover;filter:grayscale(.15) contrast(1.05) brightness(.95);transition:filter .5s}
+.id-card:hover .portrait-wrap img{filter:grayscale(0) contrast(1.05) brightness(1)}
+.portrait-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 0%,transparent 80%,rgba(0,0,0,.7) 100%),repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(0,0,0,.08) 3px,rgba(0,0,0,.08) 4px)}
+.portrait-tags{position:absolute;left:10px;bottom:10px;right:10px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 0 6px rgba(0,0,0,.9)}
+.id-meta{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;font-family:var(--mono);font-size:11px}
+.id-meta .k{color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-size:9.5px;margin-bottom:4px}
+.id-meta .v{color:var(--ink)}
+.id-meta .v.signal{color:var(--signal)}
+.rail{position:fixed;right:28px;bottom:28px;z-index:30;font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.rail .line{width:1px;height:40px;background:linear-gradient(to bottom,transparent,var(--signal))}
+section.block{padding:140px 0;position:relative}
+.sec-head{margin-bottom:72px}
+.sec-tag{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;display:flex;gap:10px;align-items:center;margin-bottom:16px}
+.sec-tag .num{color:var(--signal)}
+.sec-title{font-family:var(--serif);font-size:clamp(40px,5vw,72px);line-height:1;letter-spacing:-.03em;font-weight:400}
+.sec-title em{font-style:italic;color:var(--ink-2)}
+.sec-sub{font-family:var(--mono);font-size:12px;color:var(--ink-3);max-width:580px;margin-top:14px;line-height:1.6;letter-spacing:.02em}
+.about-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:60px}
+.about-body p{font-size:19px;line-height:1.65;color:var(--ink-2);margin-bottom:22px;max-width:620px}
+.about-body p strong{color:var(--ink);font-weight:500}
+.about-body p em{color:var(--signal);font-style:normal;font-family:var(--mono);font-size:16px}
+.stack-mini{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.stack-mini .cell{background:var(--bg-2);padding:18px 16px}
+.stack-mini .k{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.stack-mini .v{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:80px 0 0}
+.metric{padding:36px 28px;border-right:1px solid var(--line);position:relative;overflow:hidden}
+.metric:last-child{border-right:none}
+.metric .n{font-family:var(--serif);font-size:64px;line-height:1;letter-spacing:-.04em;color:var(--ink);margin-bottom:10px}
+.metric .n .unit{font-family:var(--mono);font-size:20px;color:var(--ink-3);margin-left:4px;font-weight:300}
+.metric .l{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;line-height:1.5}
+.metric::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 70%,rgba(182,255,58,0.05));opacity:0;transition:opacity .3s}
+.metric:hover::after{opacity:1}
+.proj{padding:72px 0;border-top:1px solid var(--line);position:relative;transition:background .3s}
+.proj:last-child{border-bottom:1px solid var(--line)}
+.proj:hover{background:linear-gradient(90deg,transparent,rgba(182,255,58,0.012),transparent)}
+.proj .top-row{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+.proj .badge{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--signal-dim);color:var(--signal);white-space:nowrap;flex-shrink:0;margin-top:10px}
+.proj h3{font-family:var(--serif);font-size:clamp(28px,3.5vw,48px);line-height:1.1;letter-spacing:-.02em;font-weight:400;flex:1;min-width:200px}
+.proj h3 em{font-style:italic;color:var(--ink-2)}
+.proj .tagline{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-bottom:36px;letter-spacing:.02em;line-height:1.6}
+.proj .desc{font-size:16px;line-height:1.7;color:var(--ink-2);max-width:860px;margin-bottom:36px}
+.proj .desc strong{color:var(--ink);font-weight:500}
+.spec{display:grid;grid-template-columns:repeat(4,1fr);margin:0 0 36px;border:1px solid var(--line);background:var(--bg-2);overflow:hidden}
+.spec .cell:nth-child(4n){border-right:none}
+.spec .cell:nth-last-child(-n+4){border-bottom:none}
+.spec .cell .k{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.spec .cell .v{font-family:var(--mono);font-size:22px;color:var(--ink);font-weight:500;letter-spacing:-.02em;line-height:1.2}
+.spec .cell .v.signal{color:var(--signal)}
+.spec .cell .v .unit{font-size:13px;color:var(--ink-3);font-weight:400;margin-left:2px}
+.proj ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:16px 40px;margin-bottom:32px}
+.proj ul li{display:flex;gap:12px;font-size:14.5px;line-height:1.65;color:var(--ink-2)}
+.proj ul li::before{content:"›";color:var(--signal);font-family:var(--mono);font-size:14px;flex-shrink:0;margin-top:3px}
+.proj ul li strong{color:var(--ink);font-weight:500}
+.proj ul li .hl{color:var(--signal);font-family:var(--mono);font-weight:500;font-size:13px}
+.proj .github-link{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;
+  padding:10px 18px;border:1px solid var(--line-2);color:var(--ink-2);
+  margin-bottom:28px;
+  position:relative;overflow:hidden;
+  transition:border-color .3s ease,color .3s ease,opacity .15s ease;
+}
+.proj .github-link::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 20%,rgba(182,255,58,0.1) 50%,transparent 80%);
+  transform:translateX(-110%);pointer-events:none;transition:transform 0s;
+}
+.proj .github-link svg{width:16px;height:16px;fill:currentColor;flex-shrink:0;transition:fill .2s}
+.proj .github-link:hover{
+  border-color:var(--signal);color:var(--signal);
+  background:rgba(182,255,58,0.04);
+  animation:btnFade .35s ease forwards;
+}
+.proj .github-link:hover::before{transform:translateX(120%);transition:transform .5s ease}
+.skill-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.skill-cat{background:var(--bg-2);padding:28px 28px 32px}
+.skill-cat .cat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase}
+.skill-cat .cat-head .idx{color:var(--signal)}
+.skill-cat h4{font-family:var(--serif);font-size:26px;font-weight:400;letter-spacing:-.01em;margin-bottom:14px;color:var(--ink)}
+.skill-cat .items{display:flex;flex-wrap:wrap;gap:6px}
+.xp{display:grid;grid-template-columns:1fr;gap:12px;padding:40px 0;border-top:1px solid var(--line)}
+.xp:last-child{border-bottom:1px solid var(--line)}
+.xp .role{font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.01em;margin-bottom:6px}
+.xp .org{font-family:var(--mono);font-size:12.5px;color:var(--signal);margin-bottom:14px;letter-spacing:.04em}
+.xp .desc{color:var(--ink-2);font-size:15px;line-height:1.6;max-width:780px}
+.waveform{height:160px;overflow:hidden;position:relative;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:repeating-linear-gradient(90deg,transparent 0,transparent 39px,rgba(255,255,255,0.02) 39px,rgba(255,255,255,0.02) 40px);margin:40px 0 0}
+.waveform svg{display:block;width:100%;height:100%}
+.contact-wrap{display:grid;grid-template-columns:1fr auto;gap:60px;align-items:end;padding:80px 0 60px;border-top:1px solid var(--line)}
+.contact-head{font-family:var(--serif);font-size:clamp(56px,8vw,120px);line-height:.95;letter-spacing:-.035em;font-weight:400}
+.contact-head em{font-style:italic;color:var(--signal)}
+.contact-links{display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-size:13px}
+.contact-links .k{color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-size:10.5px;flex-shrink:0}
+.contact-links a:hover .k,.contact-links button:hover .k{color:var(--signal)}
+footer{padding:40px 0 28px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink-4);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;letter-spacing:.08em;text-transform:uppercase}
+footer .center{color:var(--ink-3)}
+footer .dot{color:var(--signal)}
+.pipeline{position:absolute;left:0;right:0;bottom:40px;height:1px;background:var(--line);overflow:visible}
+.pipeline .stage{position:absolute;top:-5px;width:10px;height:10px;background:var(--signal);border-radius:50%;box-shadow:0 0 12px var(--signal);animation:flow 6s infinite linear}
+@keyframes flow{0%{left:0%;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:100%;opacity:0}}
+.fade{opacity:0;transform:translateY(18px);transition:opacity .9s ease,transform .9s ease}
+.fade.in{opacity:1;transform:translateY(0)}
+.modal-overlay{position:fixed;inset:0;background:rgba(7,8,10,0.92);backdrop-filter:blur(12px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:30px;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.modal-overlay.active{opacity:1;pointer-events:auto}
+.modal-content{width:100%;max-width:1000px;height:90vh;background:var(--bg-2);border:1px solid var(--line);display:flex;flex-direction:column;transform:scale(.95);transition:transform .4s ease}
+.modal-overlay.active .modal-content{transform:scale(1)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--bg)}
+.modal-title{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;gap:10px}
+.modal-title .dot{width:6px;height:6px;border-radius:50%;background:var(--signal)}
+.modal-actions{display:flex;gap:12px}
+#resumeFrame{flex:1;width:100%;border:0;background:var(--bg-2)}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel);border:1px solid var(--signal);color:var(--signal);font-family:var(--mono);font-size:12px;padding:12px 24px;z-index:10001;opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+@media(max-width:1100px){.spec{grid-template-columns:repeat(2,1fr)}.spec .cell:nth-child(even){border-right:none}.spec .cell:nth-child(odd){border-right:1px solid var(--line)}.spec .cell:nth-last-child(-n+2){border-bottom:none}.proj ul{grid-template-columns:1fr}}
+@media(max-width:980px){nav.top{padding:14px 22px}nav.top .links{display:none}.container{padding:0 22px}.hero-inner{grid-template-columns:1fr;gap:48px}.id-card{max-width:400px}.about-grid{grid-template-columns:1fr;gap:28px}.metrics{grid-template-columns:repeat(2,1fr)}.metric{border-right:none;border-bottom:1px solid var(--line)}.skill-grid{grid-template-columns:1fr}.contact-wrap{grid-template-columns:1fr}.contact-links a,.contact-links button{min-width:unset}.rail{display:none}.modal-content{padding:0;height:95vh}}
+@media(max-width:600px){.spec{grid-template-columns:1fr 1fr}.spec .cell{border-right:none!important}.spec .cell:nth-child(odd){border-right:1px solid var(--line)!important}.headline{font-size:clamp(40px,10vw,72px)}.metrics{grid-template-columns:1fr 1fr}.metric .n{font-size:48px}.proj h3{font-size:clamp(24px,6vw,36px)}.proj .top-row{flex-direction:column;gap:8px}.proj .badge{margin-top:0}.modal-overlay{padding:10px}}
+</style>
+</head>
+<body>
+
+<!-- Cursor Canvas -->
+<canvas class="cursor-canvas" id="cursorCanvas"></canvas>
+<div class="scanlines"></div>
+
+
+
+<div class="grid-bg"></div>
+<div class="noise"></div>
+
+<nav class="top" id="topnav">
+  <div class="brand"><span class="dot"></span> GNSR &nbsp;·&nbsp; Front-End VLSI</div>
+  <div class="links">
+    <a href="#about"><span class="num">01</span>About</a>
+    <a href="#projects"><span class="num">02</span>Projects</a>
+    <a href="#skills"><span class="num">03</span>Skills</a>
+    <a href="#experience"><span class="num">04</span>Experience</a>
+    <a href="#contact"><span class="num">05</span>Contact</a>
+  </div>
+  <div class="status">IIIT&nbsp;Sri&nbsp;City&nbsp;·&nbsp;B.Tech&nbsp;ECE&nbsp;·&nbsp;'27</div>
+</nav>
+
+<section class="hero container">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow fade"><span class="bar"></span> RTL → GDSII · Cadence · Verilog · FPGA</div>
+      <h1 class="headline fade">Designing the<br/><em>silicon</em> behind<br/>every <span class="amp">instruction.</span></h1>
+      <p class="sub fade">I'm <strong>Goluguri Nikhil Suri Reddy</strong> — an ECE undergraduate building the front-end of modern processors: <strong>microarchitecture, RTL, and ASIC flows</strong>. I've taken a UART transceiver from Verilog to a DRC/LVS-clean GDSII, deployed a CNN accelerator on Zynq with a <strong>141× speedup</strong>, and published on quantum circuit optimization at SPARC 2026.</p>
+      <div class="cta-row fade">
+        <span class="mag-wrap"><button class="btn primary" onclick="viewResume()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>View Resume</button></span>
+        <span class="mag-wrap"><a class="btn" href="#projects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>View Projects</a></span>
+        <span class="mag-wrap"><a class="btn" href="https://github.com/nik127-oss" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.95c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.09-.12-.3-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.41.35.77 1.04.77 2.1v3.12c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>GitHub</a></span>
+        <span class="mag-wrap"><a class="btn" href="https://www.linkedin.com/in/goluguri-nikhil-suri-reddy-470473300" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5.001 2.5 2.5 0 0 1 0-5.001ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21H18.4v-5.5c0-1.31-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V21H10V9Z"/></svg>LinkedIn</a></span>
+      </div>
+    </div>
+    <div class="id-card fade">
+      <div class="id-header"><span>ID · 20230247</span><span>CLASS '27</span></div>
+      <div class="portrait-wrap">
+        <img src="https://z-cdn-media.chatglm.cn/files/bd8c1c76-6857-40f2-8bfd-516b3d44e600.jpeg?auth_key=1876841967-89c229191d1e448892834d0c5dbd8f0c-0-60f72774c93cac46ca9b953904e54165" alt="Portrait"/>
+        <div class="portrait-overlay"></div>
+        <div class="portrait-tags"><span>● REC</span><span>17.6661°N · 83.2127°E</span></div>
+      </div>
+      <div class="id-meta">
+        <div><div class="k">Name</div><div class="v">Nikhil Suri Reddy</div></div>
+        <div><div class="k">Role</div><div class="v signal">VLSI / Arch</div></div>
+        <div><div class="k">Institute</div><div class="v">IIIT Sri City</div></div>
+        <div><div class="k">CGPA</div><div class="v">8.27 / 10</div></div>
+        <div><div class="k">Focus</div><div class="v">Front-end RTL</div></div>
+        <div><div class="k">Status</div><div class="v signal">Available '26</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="pipeline"><div class="stage" style="animation-delay:0s"></div><div class="stage" style="animation-delay:1.2s"></div><div class="stage" style="animation-delay:2.4s"></div><div class="stage" style="animation-delay:3.6s"></div><div class="stage" style="animation-delay:4.8s"></div></div>
+</section>
+
+<section class="block container" id="about">
+  <div class="sec-head"><div class="sec-tag"><span class="num">01</span> / ABOUT</div><h2 class="sec-title">An engineer who <em>reads datasheets</em> for fun.</h2><div class="sec-sub">Abstracts don't interest me. The translation from instruction to transistor does.</div></div>
+  <div class="about-grid fade">
+    <div class="about-body"><p>My work sits at the seam between <strong>architecture and silicon</strong> — the decisions that make a processor fast, efficient, and verifiable. I spend time in <strong>Cadence Virtuoso, Genus, Innovus, Xcelium</strong> and on FPGA toolchains, because the most interesting engineering problems don't show up until the gates meet the layout.</p><p>I learn by <em>building</em>. I'd rather tape out a small block correctly than read three papers about a big one. That's why my projects are full flows — schematic to GDSII, RTL to bitstream, theory to silicon-signoff.</p><p>Long-term, I'm aiming at <strong>CPU / SoC architecture</strong> — pipeline design, hazard handling, memory hierarchy, and hardware-software co-design for emerging workloads like ML inference and quantum control.</p></div>
+    <div class="stack-mini"><div class="cell"><div class="k">Primary RTL</div><div class="v">Verilog</div></div><div class="cell"><div class="k">Back-End</div><div class="v">Innovus / Genus</div></div><div class="cell"><div class="k">Analog</div><div class="v">Virtuoso · Spectre</div></div><div class="cell"><div class="k">FPGA</div><div class="v">Vivado · Vitis HLS</div></div><div class="cell"><div class="k">Simulators</div><div class="v">Xcelium · SimVision</div></div><div class="cell"><div class="k">Environment</div><div class="v">Linux Mint · Bash</div></div><div class="cell"><div class="k">Interests</div><div class="v">CPU µArch · RTL</div></div><div class="cell"><div class="k">Currently</div><div class="v">Spin-based QC arch</div></div></div>
+  </div>
+  <div class="metrics fade">
+    <div class="metric"><div class="n">93.2<span class="unit">%</span></div><div class="l">FPGA CNN test accuracy<br/>on 77GHz µ-Doppler</div></div>
+    <div class="metric"><div class="n">141<span class="unit">×</span></div><div class="l">Speedup vs. ARM-only<br/>inference at 1.3ms</div></div>
+    <div class="metric"><div class="n">148<span class="unit">ps</span></div><div class="l">StrongARM latch delay<br/>@ 17.55 µW in 180nm</div></div>
+    <div class="metric"><div class="n">69<span class="unit">%</span></div><div class="l">T-gate reduction<br/>ancilla-free quantum HW</div></div>
+  </div>
+</section>
+
+<section class="block container" id="projects">
+  <div class="sec-head"><div class="sec-tag"><span class="num">02</span> / PROJECTS</div><h2 class="sec-title">Built <em>end-to-end.</em></h2><div class="sec-sub">Four projects — chosen for depth, not breadth. Each one goes from specification to a verifiable artifact. Every repo is public.</div></div>
+  <article class="proj fade">
+    <div class="top-row"><span class="badge">P.01 · FPGA / Edge AI</span><h3>A <em>1D CNN accelerator</em> on Zynq-7020 for 77 GHz radar target classification</h3></div>
+    <div class="tagline">// Vivado HLS · PYNQ-Z2 · AXI-Lite · INT8 Quantization · PS–PL Co-design · April 2026</div>
+    <p class="desc">Deployed a hardware-accelerated 1D CNN on the Xilinx Zynq-7020 FPGA for real-time classification of drones, birds, humans, and corner reflectors using 77 GHz FMCW radar micro-Doppler data across 75,868 signal segments. Achieving <strong>141× speedup over ARM-only inference</strong> at 1.3 ms end-to-end latency — measured on the actual PYNQ-Z2 board, not estimated.</p>
+    <div class="spec"><div class="cell"><div class="k">Test Accuracy</div><div class="v signal">93.2<span class="unit">%</span></div></div><div class="cell"><div class="k">Speedup vs ARM</div><div class="v signal">141<span class="unit">×</span></div></div><div class="cell"><div class="k">End-to-End Latency</div><div class="v">1.3<span class="unit">ms</span></div></div><div class="cell"><div class="k">DSP Utilization</div><div class="v">212<span class="unit">/ 220</span></div></div></div>
+    <ul><li>PS–PL co-design pipeline: ARM Cortex-A9 extracts 64 IQ features from radar data → <strong>AXI-Lite DMA</strong> transfer → FPGA CNN accelerator → classification output via AXI GPIO to onboard LEDs</li><li>Resource utilization: <span class="hl">212/220 DSPs, 23K/53K LUTs, 36/140 BRAMs</span> — near-maximal DSP usage with INT8 quantized kernels and HLS pragma unrolling</li><li>Real-time classification of <strong>drones, birds, humans, corner reflectors</strong> from FMCW micro-Doppler signatures</li><li>Trained in <strong>PyTorch</strong>, quantized to INT8, and deployed via Vitis HLS cross-compilation to the programmable logic fabric</li></ul>
+    <a href="https://github.com/nik127-oss/radar-fpga-classifier" target="_blank" rel="noopener" class="github-link"><svg viewBox="0 0 24 24"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.95c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.09-.12-.3-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.41.35.77 1.04.77 2.1v3.12c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>View Source on GitHub</a>
+    <div class="chip-row"><span class="chip hot">Vivado HLS</span><span class="chip">PYNQ-Z2</span><span class="chip">AXI-Lite</span><span class="chip">INT8 Quant</span><span class="chip">PyTorch</span><span class="chip">FMCW Radar</span></div>
+  </article>
+  <article class="proj fade">
+    <div class="top-row"><span class="badge">P.02 · Analog / Mixed-Signal</span><h3>A clocked <em>StrongARM latch comparator</em> in gpdk180nm CMOS — full custom analog flow</h3></div>
+    <div class="tagline">// Virtuoso · Spectre · Quantus QRC · gpdk180nm · Monte Carlo · April 2026</div>
+    <p class="desc">Designed a clocked regenerative StrongARM latch comparator in Cadence Virtuoso using gpdk180nm technology with a custom symbol for the clocked differential amplifier topology. Achieving <strong>148 ps propagation delay at 17.55 µW dynamic power</strong> with zero static power consumption and 3.79 GHz bandwidth.</p>
+    <div class="spec"><div class="cell"><div class="k">Propagation Delay</div><div class="v signal">148<span class="unit">ps</span></div></div><div class="cell"><div class="k">Dynamic Power</div><div class="v">17.55<span class="unit">µW</span></div></div><div class="cell"><div class="k">Bandwidth</div><div class="v">3.79<span class="unit">GHz</span></div></div><div class="cell"><div class="k">Input-Referred Noise</div><div class="v">232<span class="unit">µV rms</span></div></div></div>
+    <ul><li>Full custom analog flow: <span class="hl">schematic → pre-layout sim → layout → DRC/LVS → Quantus RC extraction → post-layout sim</span> — every stage verified</li><li>Robustness under <strong>PVT sweeps</strong> (−40°C to 125°C, ±10% VDD), <span class="hl">five process corners</span> (NN/FF/SS/FS/SF), and Monte Carlo across 13 parameters</li><li>Zero static power — clock-gated regenerative topology ensures no DC path when clock is low</li><li>Custom symbol for the clocked differential amplifier topology, enabling hierarchical reuse in ADC designs</li></ul>
+    <a href="https://github.com/nik127-oss/Strong_Arm_Latch_Comparator" target="_blank" rel="noopener" class="github-link"><svg viewBox="0 0 24 24"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.95c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.09-.12-.3-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.41.35.77 1.04.77 2.1v3.12c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>View Source on GitHub</a>
+    <div class="chip-row"><span class="chip hot">Virtuoso</span><span class="chip">Spectre</span><span class="chip">Quantus QRC</span><span class="chip">Monte Carlo</span><span class="chip">PVT</span><span class="chip">180nm</span></div>
+  </article>
+  <article class="proj fade">
+    <div class="top-row"><span class="badge">P.03 · Full ASIC Flow</span><h3>A full <em>RTL-to-GDSII</em> UART transceiver — from Verilog to signoff-clean layout</h3></div>
+    <div class="tagline">// Verilog · Xcelium · Genus · Innovus · DRC/LVS · 9-Metal Signoff · April 2026</div>
+    <p class="desc">Designed a parameterizable 8-N-1 UART transceiver in Verilog with hierarchical TX/RX/top modules and dual independent 5-state FSMs. Pushed through the <strong>entire ASIC flow to DRC/LVS-clean GDSII</strong> — placed, routed, and physically verified with 9 metal layers and +38.1 ns timing slack at 25 MHz.</p>
+    <div class="spec"><div class="cell"><div class="k">Standard Cells</div><div class="v signal">209</div></div><div class="cell"><div class="k">Core Area</div><div class="v">1,530<span class="unit">µm²</span></div></div><div class="cell"><div class="k">Total Power</div><div class="v">38.8<span class="unit">µW</span></div></div><div class="cell"><div class="k">Timing Slack @25MHz</div><div class="v signal">+38.1<span class="unit">ns</span></div></div></div>
+    <ul><li>Parameterizable TX/RX with <strong>dual 5-state FSMs</strong> (IDLE → START → DATA → STOP → CLEANUP), oversampled mid-bit RX detection, <span class="hl">115,200 bps @ 25 MHz</span></li><li>Loopback verified in <strong>Cadence Xcelium + SimVision</strong>: start-bit detection, per-bit serial shifting, and byte-level integrity across the full 10-bit frame</li><li>Genus synthesis (slow PVT): 48 seq / 127 logic / 34 inv cells. Power: <span class="hl">78% register / 18% logic / 4% clock</span></li><li>Innovus back-end: floorplan with VDD/VSS power ring, global + detailed placement, CTS, 9-metal routing, Quantus RC extraction, DRC/LVS-clean signoff</li></ul>
+    <a href="https://github.com/nik127-oss/UART-asic-design" target="_blank" rel="noopener" class="github-link"><svg viewBox="0 0 24 24"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.95c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.09-.12-.3-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.41.35.77 1.04.77 2.1v3.12c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>View Source on GitHub</a>
+    <div class="chip-row"><span class="chip hot">Verilog</span><span class="chip">Cadence Genus</span><span class="chip">Innovus</span><span class="chip">Xcelium</span><span class="chip">CTS</span><span class="chip">DRC/LVS</span></div>
+  </article>
+  <article class="proj fade">
+    <div class="top-row"><span class="badge">P.04 · Accepted at SPARC 2026</span><h3>An <em>ancilla-free quantum circuit</em> for Hamming weight — accepted at SPARC 2026</h3></div>
+    <div class="tagline">// Qiskit · Bloch Sphere Analysis · Approximate QFT · NISQ-aware Optimization</div>
+    <p class="desc">Designed an ancilla-free quantum circuit for Hamming weight computation achieving <strong>up to 69% T-gate reduction</strong> under NISQ constraints. Optimized via controlled phase rotation truncation and approximate QFT, trading gate depth against hardware fidelity. Validated in Qiskit using statevector simulation and Bloch sphere analysis. Paper accepted at SPARC Conference 2026.</p>
+    <div class="spec" style="grid-template-columns:repeat(3,1fr)"><div class="cell"><div class="k">T-Gate Reduction</div><div class="v signal">69<span class="unit">%</span></div></div><div class="cell"><div class="k">Computing Regime</div><div class="v">NISQ</div></div><div class="cell"><div class="k">Validation Method</div><div class="v">Statevector</div></div></div>
+    <ul><li>Ancilla-free quantum circuit for Hamming weight — <span class="hl">69% T-gate reduction</span> under NISQ constraints, reducing quantum hardware resource requirements</li><li>Optimized via <strong>controlled phase rotation truncation</strong> and approximate QFT — systematically trading gate depth against fidelity under realistic noise budgets</li><li>Validated in <strong>Qiskit</strong> with statevector simulation and Bloch-sphere analysis confirming correctness of the truncated circuit</li><li>Ongoing follow-up: spin-based qubit representation and scalability for practical quantum hardware using VLSI-compatible fabrication</li></ul>
+    <a href="https://github.com/nik127-oss/Quantum-Hamming-Weight-Optimization" target="_blank" rel="noopener" class="github-link"><svg viewBox="0 0 24 24"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.95c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.09-.12-.3-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.26 5.69.41.35.77 1.04.77 2.1v3.12c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>View Source on GitHub</a>
+    <div class="chip-row"><span class="chip hot">Qiskit</span><span class="chip">QFT</span><span class="chip">NISQ</span><span class="chip">Research</span><span class="chip">Accepted</span></div>
+  </article>
+</section>
+
+<div class="waveform container" aria-hidden="true"><svg viewBox="0 0 1200 160" preserveAspectRatio="none"><defs><linearGradient id="fade" x1="0" x2="1"><stop offset="0%" stop-color="#b6ff3a" stop-opacity="0"/><stop offset="15%" stop-color="#b6ff3a" stop-opacity=".9"/><stop offset="85%" stop-color="#b6ff3a" stop-opacity=".9"/><stop offset="100%" stop-color="#b6ff3a" stop-opacity="0"/></linearGradient></defs><path d="M0,120 L40,120 L40,40 L80,40 L80,120 L120,120 L120,40 L160,40 L160,120 L200,120 L200,40 L240,40 L240,120 L280,120 L280,40 L320,40 L320,120 L360,120 L360,40 L400,40 L400,120 L440,120 L440,40 L480,40 L480,120 L520,120 L520,40 L560,40 L560,120 L600,120 L600,40 L640,40 L640,120 L680,120 L680,40 L720,40 L720,120 L760,120 L760,40 L800,40 L800,120 L840,120 L840,40 L880,40 L880,120 L920,120 L920,40 L960,40 L960,120 L1000,120 L1000,40 L1040,40 L1040,120 L1080,120 L1080,40 L1120,40 L1120,120 L1200,120" fill="none" stroke="url(#fade)" stroke-width="1.5" opacity=".9"/><path d="M0,100 L40,100 L40,60 L80,60 L80,100 L120,100 L120,60 L160,60 L160,60 L200,60 L200,100 L240,100 L240,60 L280,60 L280,100 L320,100 L320,60 L360,60 L360,100 L400,100 L400,60 L440,60 L440,100 L480,100 L480,100 L520,100 L520,60 L560,60 L560,100 L600,100 L600,60 L640,60 L640,100 L680,100 L680,60 L720,60 L720,100 L760,100 L760,100 L800,100 L800,60 L840,60 L840,100 L880,100 L880,60 L920,60 L920,100 L960,100 L960,60 L1000,60 L1000,100 L1040,100 L1040,60 L1080,60 L1080,100 L1120,100 L1120,60 L1200,60" fill="none" stroke="#a7b0ab" stroke-width="1" opacity=".45"/></svg></div>
+
+<section class="block container" id="skills">
+  <div class="sec-head"><div class="sec-tag"><span class="num">03</span> / STACK</div><h2 class="sec-title">Tools I <em>actually use.</em></h2><div class="sec-sub">Not a word cloud — the real workflow from RTL through physical signoff, plus FPGA and embedded.</div></div>
+  <div class="skill-grid fade">
+    <div class="skill-cat"><div class="cat-head"><span>VLSI · Back-End &amp; Analog</span><span class="idx">/ A</span></div><h4>RTL to GDSII, signoff clean.</h4><div class="items"><span>Cadence Genus</span><span>Innovus</span><span>Virtuoso</span><span>Xcelium</span><span>Spectre</span><span>Quantus QRC</span><span>DRC/LVS</span><span>STA</span><span>CTS</span><span>PnR</span><span>Parasitic Extraction</span><span>Monte Carlo</span><span>PVT Sweeps</span></div></div>
+    <div class="skill-cat"><div class="cat-head"><span>FPGA · Edge AI</span><span class="idx">/ B</span></div><h4>Hardware accelerators, quantized.</h4><div class="items"><span>Vivado</span><span>Vitis HLS</span><span>PYNQ</span><span>Zynq-7020</span><span>AXI-Lite</span><span>AXI GPIO</span><span>PyTorch</span><span>INT8 Quantization</span><span>CNN Deployment</span></div></div>
+    <div class="skill-cat"><div class="cat-head"><span>Languages · RTL</span><span class="idx">/ C</span></div><h4>Low level by preference.</h4><div class="items"><span>Verilog</span><span>C</span><span>C++</span><span>Python</span><span>Embedded C</span><span>Assembly</span><span>TCL</span><span>Bash</span></div></div>
+    <div class="skill-cat"><div class="cat-head"><span>Systems · Embedded</span><span class="idx">/ D</span></div><h4>Bench to board, quietly competent.</h4><div class="items"><span>Linux Mint</span><span>Git</span><span>UART</span><span>I²C</span><span>SPI</span><span>Arduino</span><span>Raspberry Pi</span><span>MATLAB</span><span>LTSpice</span><span>Qiskit</span><span>Keil µVision5</span></div></div>
+  </div>
+</section>
+
+<section class="block container" id="experience">
+  <div class="sec-head"><div class="sec-tag"><span class="num">04</span> / EXPERIENCE</div><h2 class="sec-title">Systems engineering, <em>with constraints.</em></h2><div class="sec-sub">Leadership where the trade-offs are real — power, reliability, and communication budgets.</div></div>
+  <div class="xp fade"><div><div class="role">Payload Design Lead <em style="font-family:var(--serif);color:var(--ink-3);font-size:20px">— Student Satellite Group</em></div><div class="org">Integrating sensors + hardware under power, thermal, and downlink budgets. · IIIT Sri City · Active</div><div class="desc">I lead the payload hardware design for our university's student satellite — integrating sensors, interfaces, and compute into a constrained, power-limited, radiation-aware envelope. The role has sharpened my instinct for <em>system-level thinking</em>: every design choice rolls up into a reliability and mission-time budget.</div></div></div>
+  <div class="xp fade"><div><div class="role">Certificate Program 2.0 <em style="font-family:var(--serif);color:var(--ink-3);font-size:20px">— IoT &amp; Digital Twin</em></div><div class="org">Hands-on IoT deployment &amp; digital-twin modeling. · IIITS · 2024</div><div class="desc">Applied embedded control and sensor fusion toward digital-twin representations of physical systems — reinforcing the hardware-software co-design mindset I carry into VLSI work.</div></div></div>
+  <div class="xp fade"><div><div class="role">First-author paper <em style="font-family:var(--serif);color:var(--ink-3);font-size:20px">— Ancilla-Free Hamming Weight</em></div><div class="org">Accepted at SPARC 2026 · quantum circuit optimization.</div><div class="desc">Designed an ancilla-free quantum circuit for Hamming weight computation achieving up to <strong style="color:var(--signal)">69% T-gate reduction</strong> under NISQ constraints — validated with Qiskit statevector simulation. Ongoing work investigates spin-based qubit representation for practical quantum hardware realization.</div></div></div>
+</section>
+
+<section class="block container" id="contact">
+  <div class="sec-head"><div class="sec-tag"><span class="num">05</span> / CONTACT</div><h2 class="sec-title">Let's <em>build something that etches.</em></h2><div class="sec-sub">Open to VLSI / CPU-architecture internships and research collaborations. I read every message.</div></div>
+  <div class="contact-wrap fade">
+    <div class="contact-head">goluguri<br/><em>nikhil</em> suri reddy<span style="color:var(--signal)">.</span></div>
+    <div class="contact-links">
+      <a href="mailto:nikhilgoluguri@gmail.com"><span class="k">Email</span><span>nikhilgoluguri@gmail.com →</span></a>
+      <a href="https://github.com/nik127-oss" target="_blank" rel="noopener"><span class="k">GitHub</span><span>nik127-oss →</span></a>
+      <a href="https://www.linkedin.com/in/goluguri-nikhil-suri-reddy-470473300" target="_blank" rel="noopener"><span class="k">LinkedIn</span><span>/in/goluguri-nikhil →</span></a>
+      <a href="tel:+919177527333"><span class="k">Phone</span><span>+91 91775 27333 →</span></a>
+      <button onclick="viewResume()"><span class="k">Resume</span><span>View PDF →</span></button>
+    </div>
+  </div>
+</section>
+
+<footer class="container"><div>© 2026 GNSR · Portfolio v1.0</div><div class="center"><span class="dot">●</span> Built in HTML/CSS · No frameworks · Last synth: Apr 2026</div><div>IIIT Sri City · B.Tech ECE '27</div></footer>
+<div class="rail"><div>SCROLL</div><div class="line"></div></div>
+
+<!-- Resume Modal -->
+<div id="resumeModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title"><span class="dot"></span> Resume · Goluguri Nikhil Suri Reddy</div>
+      <div class="modal-actions">
+        <span class="mag-wrap"><button class="btn" onclick="downloadResume()" style="padding:10px 18px;font-size:11px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 3v14m0 0l-5-5m5 5l5-5M5 21h14"/></svg>Download PDF</button></span>
+        <span class="mag-wrap"><button class="btn" onclick="closeResumeModal()" style="padding:10px 18px;font-size:11px;border-color:var(--ink-3);color:var(--ink-3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Close</button></span>
+      </div>
+    </div>
+    <iframe id="resumeFrame" src="" title="Resume"></iframe>
+  </div>
+</div>
+
+<div id="resumeToast" class="toast"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Resume download started</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   UPGRADED PHOSPHOR CURSOR ENGINE
+   Crosshair dot · Segmented targeting ring ·
+   Speed-reactive trail color (green↔amber) ·
+   Rotation ring on hover · Click burst ripples
+   ═══════════════════════════════════════════════ */
+class PhosphorCursor {
+  constructor() {
+    if (!window.matchMedia('(pointer:fine)').matches) return;
+    this.canvas = document.getElementById('cursorCanvas');
+    this.ctx    = this.canvas.getContext('2d');
+    this.mx = -300; this.my = -300;
+    this.rx = -300; this.ry = -300;
+    this.trail = [];
+    this.particles = [];
+    this.ripples = [];
+    this.hover = false;
+    this.ringR = 20;
+    this.angle = 0;
+    this.magEls = document.querySelectorAll('.mag-wrap');
+    this.setup();
+  }
+
+  setup() {
+    // Size canvas to CSS pixels — no DPR scaling (keeps it simple & correct)
+    const sz = () => {
+      this.canvas.width  = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    };
+    sz();
+    window.addEventListener('resize', sz);
+
+    window.addEventListener('mousemove', e => {
+      this.mx = e.clientX; this.my = e.clientY;
+      this.trail.push({x: this.mx, y: this.my});
+      if (this.trail.length > 35) this.trail.shift();
+      const dx = this.trail.length > 1 ? this.mx - this.trail[this.trail.length-2].x : 0;
+      const dy = this.trail.length > 1 ? this.my - this.trail[this.trail.length-2].y : 0;
+      const spd = Math.sqrt(dx*dx + dy*dy);
+      if (spd > 2) {
+        for (let i = 0; i < Math.min(Math.floor(spd/6)+1, 4); i++) {
+          const a = Math.random()*Math.PI*2, s = .5+Math.random()*2;
+          this.particles.push({
+            x:this.mx, y:this.my,
+            vx:Math.cos(a)*s, vy:Math.sin(a)*s+.1,
+            life:1, decay:.02+Math.random()*.02,
+            size:.8+Math.random()*2,
+            hue: 78 - Math.min(spd/40,1)*38
+          });
+        }
+      }
+    });
+
+    window.addEventListener('click', e => {
+      this.ripples.push({x:e.clientX, y:e.clientY, r:2, max:50, life:1, decay:.03});
+      for (let i=0;i<12;i++) {
+        const a=(Math.PI*2/12)*i, s=2+Math.random()*4;
+        this.particles.push({x:e.clientX,y:e.clientY,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,decay:.025,size:2,hue:78});
+      }
+    });
+
+    // Hover detection
+    const sel = 'a,button,.btn,.chip,.spec .cell,.skill-cat .items span,.github-link,.metric';
+    document.querySelectorAll(sel).forEach(el => {
+      el.addEventListener('mouseenter', () => { this.hover=true;  this.ringR=30; });
+      el.addEventListener('mouseleave', () => { this.hover=false; this.ringR=20; });
+    });
+
+    this.loop();
+  }
+
+  loop() {
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    if (this.mx < -200) { requestAnimationFrame(()=>this.loop()); return; }
+
+    // Lag ring behind mouse
+    this.rx += (this.mx - this.rx) * 0.1;
+    this.ry += (this.my - this.ry) * 0.1;
+    if (this.hover) this.angle += 0.8;
+
+    // --- TRAIL ---
+    if (this.trail.length > 1) {
+      for (let i=1; i<this.trail.length; i++) {
+        const a = i/this.trail.length;
+        ctx.beginPath();
+        ctx.moveTo(this.trail[i-1].x, this.trail[i-1].y);
+        ctx.lineTo(this.trail[i].x,   this.trail[i].y);
+        ctx.strokeStyle = `rgba(182,255,58,${a*.35})`;
+        ctx.lineWidth = a * 2;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    }
+
+    // --- PARTICLES ---
+    for (let i=this.particles.length-1; i>=0; i--) {
+      const p = this.particles[i];
+      p.x+=p.vx; p.y+=p.vy; p.vy+=.01; p.vx*=.98; p.vy*=.98; p.life-=p.decay;
+      if (p.life<=0) { this.particles.splice(i,1); continue; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${p.hue},100%,70%,${p.life*.6})`;
+      ctx.fill();
+    }
+
+    // --- RIPPLES ---
+    for (let i=this.ripples.length-1; i>=0; i--) {
+      const r=this.ripples[i];
+      r.r += (r.max-r.r)*.1; r.life-=r.decay;
+      if (r.life<=0) { this.ripples.splice(i,1); continue; }
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(182,255,58,${r.life*.5})`;
+      ctx.lineWidth = 1.5*r.life;
+      ctx.stroke();
+    }
+
+    // --- SEGMENTED RING (at lagged pos) ---
+    ctx.save();
+    ctx.translate(this.rx, this.ry);
+    ctx.rotate(this.angle * Math.PI/180);
+    const R = this.hover ? 28 : 20;
+    const col = this.hover ? '#ffb347' : '#b6ff3a';
+    const gap = .25;
+    const segs = [[gap, Math.PI/2-gap],[Math.PI/2+gap, Math.PI-gap],[Math.PI+gap, 3*Math.PI/2-gap],[3*Math.PI/2+gap, Math.PI*2-gap]];
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1.2;
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 8;
+    for (const [s,e] of segs) {
+      ctx.beginPath(); ctx.arc(0,0,R,s,e); ctx.stroke();
+    }
+    // Tick marks
+    for (const a of [0, Math.PI/2, Math.PI, 3*Math.PI/2]) {
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*(R-3), Math.sin(a)*(R-3));
+      ctx.lineTo(Math.cos(a)*(R+3), Math.sin(a)*(R+3));
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // --- CROSSHAIR (exact mouse pos, no lag) ---
+    ctx.save();
+    ctx.translate(this.mx, this.my);
+    const cc = this.hover ? '#ffb347' : '#b6ff3a';
+    ctx.strokeStyle = cc;
+    ctx.fillStyle   = cc;
+    ctx.lineWidth   = 1.5;
+    ctx.lineCap     = 'round';
+    ctx.shadowColor = cc;
+    ctx.shadowBlur  = 10;
+    // 4 bars with center gap
+    const L=8, G=3;
+    ctx.beginPath(); ctx.moveTo(-L-G,0); ctx.lineTo(-G,0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo( G,0);   ctx.lineTo( L+G,0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,-L-G); ctx.lineTo(0,-G); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, G);   ctx.lineTo(0, L+G); ctx.stroke();
+    // Center dot
+    ctx.beginPath(); ctx.arc(0,0,1.8,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+
+    // --- MAGNETIC ---
+    this.magEls.forEach(el => {
+      const r=el.getBoundingClientRect();
+      const cx=r.left+r.width/2, cy=r.top+r.height/2;
+      const dx=this.mx-cx, dy=this.my-cy;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if (d<100 && d>1) {
+        const s=(1-d/100)*6;
+        el.style.setProperty('--mx',(dx/d*s)+'px');
+        el.style.setProperty('--my',(dy/d*s)+'px');
+      } else {
+        el.style.setProperty('--mx','0px');
+        el.style.setProperty('--my','0px');
+      }
+    });
+
+    requestAnimationFrame(()=>this.loop());
+  }
+}
+
+/* ═══ SITE LOGIC ═══ */
+const nav = document.getElementById('topnav');
+window.addEventListener('scroll', () => {
+  window.scrollY > 40 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled');
+}, { passive: true });
+
+const io = new IntersectionObserver(e => {
+  e.forEach(t => { if (t.isIntersecting) { t.target.classList.add('in'); io.unobserve(t.target); }});
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade').forEach(el => io.observe(el));
+setTimeout(() => { document.querySelectorAll('.fade:not(.in)').forEach(el => el.classList.add('in')); }, 2500);
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    if (id.length > 1 && document.querySelector(id)) {
+      e.preventDefault();
+      window.scrollTo({ top: document.querySelector(id).getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+    }
+  });
+});
+
+/* ═══ RESUME ═══ */
+const resumeUrl = 'https://github.com/nik127-oss/nik127-oss.github.io/raw/main/Goluguri_Nikhil_Suri_Reddy_Resume.pdf';
+
+function viewResume() {
+  document.getElementById('resumeFrame').src = `https://docs.google.com/viewer?url=${encodeURIComponent(resumeUrl)}&embedded=true`;
+  document.getElementById('resumeModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeResumeModal() {
+  document.getElementById('resumeModal').classList.remove('active');
+  document.getElementById('resumeFrame').src = '';
+  document.body.style.overflow = '';
+}
+function downloadResume() {
+  const a = document.createElement('a');
+  a.href = resumeUrl; a.download = 'Goluguri_Nikhil_Suri_Reddy_Resume.pdf';
+  a.target = '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  const t = document.getElementById('resumeToast');
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
+}
+window.addEventListener('keydown', e => { if (e.key === 'Escape') closeResumeModal(); });
+
+/* ═══ INIT ═══ */
+window.addEventListener('DOMContentLoaded', () => { new PhosphorCursor(); });
+</script>
+</body>
+</html>
